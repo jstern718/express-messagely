@@ -4,7 +4,7 @@
 
 
 const express = require("express");
-const cors = require("cors");
+const cors = require("cors"); //lets users access from other systems
 const { authenticateJWT } = require("./middleware/auth");
 
 const { NotFoundError } = require("./expressError");
