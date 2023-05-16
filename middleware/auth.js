@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
+const Message = require("../models/message");
 
 
 /** Middleware: Authenticate user. */
@@ -25,9 +26,11 @@ function authenticateJWT(req, res, next) {
 /** Middleware: Requires user is authenticated. */
 
 function ensureLoggedIn(req, res, next) {
-  if (!res.locals.user) throw new UnauthorizedError();
-
-  return next();
+  const user = res.locals.user;
+  if (user && user.username) {
+    return next();
+  }
+  throw new UnauthorizedError();
 }
 
 /** Middleware: Requires user is user for route. */
@@ -36,11 +39,37 @@ function ensureCorrectUser(req, res, next) {
   const currentUser = res.locals.user;
   const hasUnauthorizedUsername = currentUser?.username !== req.params.username;
 
-if (!currentUser || hasUnauthorizedUsername){
-  throw new UnauthorizedError();
-} 
-
+  if (!currentUser || hasUnauthorizedUsername) {
+    throw new UnauthorizedError();
+  }
   return next();
+}
+
+/** Middleware: Requires user is either the same user as on the to or from message user*/
+function ensureToOrFromMessageId(req, res, next) {
+  const currentUser = res.locals.user;
+  const message = Message.get(req.paras.id);
+
+  const isAuthorizedUser = message?.from_user.username === currentUser?.username ||
+    message?.to_user.username === currentUser?.username ? true : false;
+
+  if (currentUser && isAuthorizedUser) {
+    return next();
+  }
+  throw new UnauthorizedError();
+}
+
+/** Middleware: Requires user is recipient of message*/
+function ensureRecipient(req, res, next) {
+  const currentUser = res.locals.user;
+  const message = Message.get(req.paras.id);
+
+  const isRecipient = message?.to_user.username === currentUser?.username ? true : false;
+
+  if (currentUser && isRecipient) {
+    return next();
+  }
+  throw new UnauthorizedError();
 }
 
 
@@ -48,4 +77,6 @@ module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   ensureCorrectUser,
+  ensureToOrFromMessageId,
+  ensureRecipient,
 };
