@@ -65,7 +65,7 @@ async function ensureRecipient(req, res, next) {
   const currentUser = res.locals.user;
   const message = await Message.get(req.params.id);
 
-  const isRecipient = message.to_user?.username === currentUser?.username ? true : false;
+  const isRecipient = message?.to_user.username === currentUser?.username ? true : false;
   console.log("isRecipient.......", isRecipient, message)
   if (currentUser && isRecipient) {
     return next();

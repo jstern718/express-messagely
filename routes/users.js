@@ -25,6 +25,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  * => {user: {username, first_name, last_name, phone, join_at, last_login_at}}
  *
  **/
+//TODO: remove ensureLoggedIn in Routes
 router.get("/:username", ensureLoggedIn, ensureCorrectUser, async function (req, res, next) {
     const { username } = req.params;
 
