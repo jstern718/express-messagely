@@ -66,4 +66,15 @@ router.get("/:username/from", ensureLoggedIn, ensureCorrectUser, async function 
     return res.json({ messages });
 });
 
+/** Get /passwordChange: Sends 6 digit code for password change.
+ *
+ * returns JSON {code}.
+ */
+router.get("/:username/passwordChange", async function (req, res, next) {
+    const { username } = req.params;
+
+    const user = await User.get(username);
+    const code = Math.floor(100000 + Math.random() * 900000);
+});
+
 module.exports = router;

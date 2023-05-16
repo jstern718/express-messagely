@@ -28,7 +28,6 @@ router.post("/login", async function (req, res, next) {
  *
  * {username, password, first_name, last_name, phone} => {token}.
  */
-//TODO: Spacing
 router.post("/register", async function (req, res, next) {
 
   if (req.body === undefined) throw new BadRequestError();
@@ -36,7 +35,7 @@ router.post("/register", async function (req, res, next) {
   const { username, password, first_name, last_name, phone } = req.body;
 
   await User.register({ username, password, first_name, last_name, phone });
-  
+
   if (await User.authenticate(username, password)) {
     const _token = jwt.sign({ username }, SECRET_KEY, JWT_OPTIONS);
 
