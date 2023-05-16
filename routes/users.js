@@ -2,7 +2,11 @@
 
 const Router = require("express").Router;
 const router = new Router();
+const User = require("../models/user");
 
+// const { authenticateJWT } = require("../middleware/auth");
+
+const { NotFoundError } = require("./expressError");
 
 /** GET / - get list of users.
  *
@@ -10,6 +14,11 @@ const router = new Router();
  *
  **/
 
+router.get("/", async function (req, res, next) {
+
+    const allUsers = await User.all();
+    return res.json({ users: allUsers });
+}
 
 /** GET /:username - get detail of users.
  *
