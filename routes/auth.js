@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const { BadRequestError, UnauthorizedError } = require("../expressError");
 const User = require("../models/user");
-const { SECRET_KEY } = require("../config");
+const { SECRET_KEY, JWT_OPTIONS } = require("../config");
 
 /** POST /login: {username, password} => {token} */
 router.post("/login", async function (req, res, next) {
@@ -15,9 +15,9 @@ router.post("/login", async function (req, res, next) {
 
   const { username, password } = req.body;
   if (await User.authenticate(username, password)) {
-    const token = jwt.sign({ username }, SECRET_KEY);
+    const _token = jwt.sign({ username }, SECRET_KEY, JWT_OPTIONS);
     User.updateLoginTimestamp(username);
-    return res.json({ token });
+    return res.json({ _token });
   }
   throw new UnauthorizedError("Invalid user/password");
 });
@@ -33,9 +33,9 @@ router.post("/register", async function (req, res, next) {
   const { username, password, first_name, last_name, phone } = req.body;
   await User.register({ username, password, first_name, last_name, phone });
   if (await User.authenticate(username, password)) {
-    const token = jwt.sign({ username }, SECRET_KEY);
+    const _token = jwt.sign({ username }, SECRET_KEY, JWT_OPTIONS);
     User.updateLoginTimestamp(username);
-    return res.json({ token });
+    return res.json({ _token });
   }
   throw new UnauthorizedError("Invalid user/password");
 });

@@ -46,9 +46,9 @@ function ensureCorrectUser(req, res, next) {
 }
 
 /** Middleware: Requires user is either the same user as on the to or from message user*/
-function ensureToOrFromMessageId(req, res, next) {
+async function ensureToOrFromMessageId(req, res, next) {
   const currentUser = res.locals.user;
-  const message = Message.get(req.paras.id);
+  const message = await Message.get(req.params.id);
 
   const isAuthorizedUser = message?.from_user.username === currentUser?.username ||
     message?.to_user.username === currentUser?.username ? true : false;
@@ -60,12 +60,13 @@ function ensureToOrFromMessageId(req, res, next) {
 }
 
 /** Middleware: Requires user is recipient of message*/
-function ensureRecipient(req, res, next) {
+async function ensureRecipient(req, res, next) {
+  console.log("ensureRecipient runs.......")
   const currentUser = res.locals.user;
-  const message = Message.get(req.paras.id);
+  const message = await Message.get(req.params.id);
 
-  const isRecipient = message?.to_user.username === currentUser?.username ? true : false;
-
+  const isRecipient = message.to_user?.username === currentUser?.username ? true : false;
+  console.log("isRecipient.......", isRecipient, message)
   if (currentUser && isRecipient) {
     return next();
   }
